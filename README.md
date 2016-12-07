@@ -12,32 +12,33 @@ This node.js module allows connecting to a Google Spreadsheet, changing cell val
 The following usage example is complete, meaning it covers all provided functionality. It shows how to change some parameter cells in the spreadsheet and then read a value from a different cell.
 
 ```javascript
-ֿvar Promise = require('bluebird');
+var Promise = require('bluebird');
 var GoogleSpreadsheetAsPromised = require('google-spreadsheet-as-promised');
+
 var CREDS = require('./google-api-creds.json');
 
 var SPREADSHEET_KEY = '<spreadsheet key>';
 
 var WORKSHEET_ID = 0;
-var PARAMETER_RANGE = 'B4:C12'; // Matrix range covers all cells where parameters should be changed
+var PARAMETER_RANGE = 'B2:C8'; // Matrix range covers all cells where parameters should be changed
 var PARAMETER_CELLS = {
-    parameter_1: 'B4',
-    parameter_2: 'B5',
-    parameter_3: 'C4',
-    parameter_4: 'C10'
-    parameter_5: 'C12'
+    parameter1: 'B2',
+    parameter2: 'B4',
+    parameter3: 'C7',
+    parameter4: 'C8'
 };
-var RESULT_CELL = 'D14';
+var RESULT_CELL = 'D20';
 
 var parameters = {
-    parameter_1: '100',
-    parameter_2: '0.5',
-    parameter_3: '17',
-    parameter_4: '55'
-    parameter_5: 'NONE'
+    parameter1: '100',
+    parameter2: '0.5',
+    parameter3: '17',
+    parameter4: '55'
 };
 
-getResultWithParameter(parameters);
+getResultWithParameter(parameters).then(function(result) {
+    console.log(result);
+});
 
 // Given parameters, resolves to the result cell after
 function getResultWithParameter(parameters) {
@@ -51,24 +52,24 @@ function getResultWithParameter(parameters) {
             return worksheet.getCells(PARAMETER_RANGE); 
         }).then(function(cells) {
             var promises = [];
-            var parameters = Object.keys(parameters);
-            for (var i = 0; i < parameters.length; i++) {
-                var name = parameters[i];
+            var names = Object.keys(parameters);
+            for (var i = 0; i < names.length; i++) {
+                var name = names[i];
                 var value = parameters[name];
-                var cell = PARAMETER_CELLS.parameters[name];
+                var cell = PARAMETER_CELLS[name];
                 if (!cell) {
                     return reject("Unknown Parameter: " + name);
                 }
                 promises.push(cells.setValue(cell, value));
             }
-            return Promise.all(promises); // This makes all values change in parallel
+            return Promise.all(promises); // This makes all values change in parallel 
         }).then(function() {
-            return worksheet.getCell(RESULT_CELL); // We must load the result cell only after parameter values are set
+            return worksheet.getCell(RESULT_CELL); // We must load the result cell only after parameter values are all set
         }).then(function(cell) {
             return resolve(cell.getValue());
-        });    
+        });
     });
-});
+};
 ```
 
 ### `GoogleSpreadsheetAsPromised`
