@@ -1,0 +1,122 @@
+var Promise = require('bluebird');
+var GoogleSpreadsheet = require('google-spreadsheet');
+
+var parseColumn = function(string) {
+    var result = 0;
+    for (var i = 0; i < string.length; i++) {
+        result *= 26;
+        result += parseInt(string.charCodeAt(i) - 65) + 1; // Excel is 1-based
+    }
+    return result;
+};
+
+function CellAsPromised(cell) {
+    this.getValue = function() {
+        return cell.value;
+    };
+
+    this.setValue = function(value) {
+        return new Promise(function(resolve, reject) {
+            cell.setValue(value, function(err) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve();
+            });
+        });
+    };
+}
+
+function CellsAsPromised(cells, range) {
+
+    var cellToIndex = function(cellString) {
+        var col = parseColumn(cellString.replace(/\d/g,''));
+        var row = parseInt(cellString.replace(/\D/g,''));
+        return (col - range['min-col']) + (row - range['min-row']) * (range['max-col'] - range['min-col'] + 1);
+    };
+
+    this.getValue = function(cellString) {
+        var index = cellToIndex(cellString);
+        return cells[index].value;
+    };
+
+    this.setValue = function(cellString, value) {
+        var index = cellToIndex(cellString);
+        return new Promise(function(resolve, reject) {
+            cells[index].setValue(value, function(err) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve();
+            });
+        });
+    };
+}
+
+function WorksheetAsPromised(worksheet) {
+
+    var parseRange = function(range) {
+        var parts = range.split(':');
+        return {
+            'min-col': parseColumn(parts[0].replace(/\d/g,'')),
+            'max-col': parseColumn(parts[1].replace(/\d/g,'')),
+            'min-row': parseInt(parts[0].replace(/\D/g,'')),
+            'max-row': parseInt(parts[1].replace(/\D/g,''))
+        };
+    };
+
+    this.getCells = function(rangeString) {
+        var range = parseRange(rangeString);
+        params = range;
+        params['return-empty'] = 'true';
+        return new Promise(function(resolve, reject) {
+            worksheet.getCells(params, function(err, cells) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(new CellsAsPromised(cells, range));
+            });
+        });
+    };
+
+    this.getCell = function(cellString) {
+        var range = parseRange(cellString + ":" + cellString);
+        params = range;
+        params['return-empty'] = 'true';
+        return new Promise(function(resolve, reject) {
+            worksheet.getCells(params, function(err, cells) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(new CellAsPromised(cells[0]));
+            });
+        });
+    };
+}
+
+function GoogleSpreadsheetAsPromised() {
+    this.load = function(spreadsheet_key, creds) {
+        return new Promise(function(resolve, reject) {
+            this.doc = new GoogleSpreadsheet(spreadsheet_key);
+            this.doc.useServiceAccountAuth(creds, function(err) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve();
+            });
+        });
+    };
+
+    this.getWorksheet = function(index) {
+        return new Promise(function(resolve, reject) {
+            this.doc.getInfo(function(err, info) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(new WorksheetAsPromised(info.worksheets[index]));
+            });
+        });
+    };
+}
+
+module.exports = GoogleSpreadsheetAsPromised;

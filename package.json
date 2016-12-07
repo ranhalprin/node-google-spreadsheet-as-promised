@@ -1,0 +1,30 @@
+{
+  "name": "google-spreadsheet-as-promised",
+  "version": "0.2.2",
+  "description": "Basic Google Spreadsheet functionality - load a spreadsheet, switch workbooks, read and write cells, wrapped in Promise interface and with human readable cell designation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ranhalprin/node-google-spreadsheet-as-promised.git"
+  },
+  "keywords": [
+    "excel",
+    "promises",
+    "spreadsheet",
+    "nodejs",
+    "javascript"
+  ],
+  "author": "ranhalprin",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/ranhalprin/node-google-spreadsheet-as-promised/issues"
+  },
+  "homepage": "https://github.com/ranhalprin/node-google-spreadsheet-as-promised#readme",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "google-spreadsheet": "2.0.3"
+  }
+}
