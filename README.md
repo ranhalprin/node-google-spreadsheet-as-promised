@@ -2,7 +2,7 @@
 
 [![NPM version](https://badge.fury.io/js/google-spreadsheet-as-promised.png)](http://badge.fury.io/js/google-spreadsheet-as-promised)
 
-This is a very basic node.js module that allows connecting to a Google Spreadsheet, changing cell values and reading cell values. It is useful in the context where a spreadsheet has complicated logic that you do not want to move into code, or if you want to validate that your code behaves the same as the spreadsheet for different inputs.
+This node.js module allows connecting to a Google Spreadsheet, changing cell values and reading cell values. It is useful in the context where a spreadsheet has complicated logic that you do not want to move into code, or if you want to validate that your code behaves the same as the spreadsheet for different inputs.
 
 ## Installation
 ``` npm install google-spreadsheet-as-promised ```
@@ -12,7 +12,8 @@ This is a very basic node.js module that allows connecting to a Google Spreadshe
 The following usage example is complete, meaning it covers all provided functionality. It shows how to change some parameter cells in the spreadsheet and then read a value from a different cell.
 
 ```javascript
-ֿvar GoogleSpreadsheetAsPromised = require('google-spreadsheet-as-promised');
+ֿvar Promise = require('bluebird');
+var GoogleSpreadsheetAsPromised = require('google-spreadsheet-as-promised');
 var CREDS = require('./google-api-creds.json');
 
 var SPREADSHEET_KEY = '<spreadsheet key>';
@@ -73,7 +74,6 @@ function getResultWithParameter(parameters) {
 ### `GoogleSpreadsheetAsPromised`
 
 The main class that represents an entire spreadsheet.
-
 
 #### `new GoogleSpreadsheetAsPromised()`
 
@@ -191,6 +191,7 @@ Support bulk setting of multiple cells in one API call to reduce network overhea
 
 ## Links
 - <https://github.com/ranhalprin/node-google-spreadsheet-as-promised>
+- <https://www.npmjs.com/package/google-spreadsheet-as-promised/>
 - <https://www.npmjs.com/package/google-spreadsheet/>
 - <https://developers.google.com/google-apps/spreadsheets/>
 
