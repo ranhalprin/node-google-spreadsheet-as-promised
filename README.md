@@ -72,6 +72,12 @@ function getResultWithParameter(parameters) {
 };
 ```
 
+-----------------------------------------
+
+## API
+
+This module uses [Blubird Promises](http://bluebirdjs.com/docs/getting-started.html).
+
 ### `GoogleSpreadsheetAsPromised`
 
 The main class that represents an entire spreadsheet.
@@ -94,6 +100,10 @@ Resolves to a WorksheetAsPromised object that represents one of the worksheets (
 
 - `worksheet_id` -- the numeric ID of the worksheet you want to work with, usually 0 for the default tab.
 
+----------------------------------
+### `WorksheetAsPromised`
+
+This class represnts a worksheet (tab)
 #### 'WorksheetAsPromised.getCells(range)'
 
 Resolves to a CellsAsPromised object that represents a groups of cells.
