@@ -40,6 +40,14 @@ function CellsAsPromised(cells, range) {
         return cells[index].value;
     };
 
+    this.getAllValues = function() {
+        var result = [];
+        for (var i = 0; i < cells.length; i++) {
+            result.push(cells[i].value)
+        }
+        return result;
+    };
+
     this.setValue = function(cellString, value) {
         var index = cellToIndex(cellString);
         return new Promise(function(resolve, reject) {

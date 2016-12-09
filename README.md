@@ -9,7 +9,7 @@ This node.js module allows connecting to a Google Spreadsheet, changing cell val
 
 ## Usage
 
-The following usage example is complete, meaning it covers all provided functionality. It shows how to change some parameter cells in the spreadsheet and then read a value from a different cell.
+The following usage example is complete, meaning it covers all provided functionality. It shows how to change some parameter cells in the spreadsheet and then read values from other cells.
 
 ```javascript
 var Promise = require('bluebird');
@@ -27,7 +27,8 @@ var PARAMETER_CELLS = {
     parameter3: 'C7',
     parameter4: 'C8'
 };
-var RESULT_CELL = 'D20';
+var TOTAL_CELL = 'D20';
+var INTERMEDIATE_CALCULATIONS_RANGE = 'D10:D14';
 
 var parameters = {
     parameter1: '100',
@@ -45,6 +46,7 @@ function getResultWithParameter(parameters) {
     return new Promise(function(resolve, reject) {
         var sheet = new GoogleSpreadsheetAsPromised();
         var worksheet;
+        var result = {};
         sheet.load(SPREADSHEET_KEY, CREDS).then(function() {
             return sheet.getWorksheet(WORKSHEET_ID);
         }).then(function(resultWorksheet) {
@@ -64,9 +66,13 @@ function getResultWithParameter(parameters) {
             }
             return Promise.all(promises); // This makes all values change in parallel 
         }).then(function() {
-            return worksheet.getCell(RESULT_CELL); // We must load the result cell only after parameter values are all set
+            return worksheet.getCell(TOTAL_CELL); // We must load the result cell only after parameter values are all set
         }).then(function(cell) {
-            return resolve(cell.getValue());
+            result.total = cell.getValue();
+            return worksheet.getCells(INTERMEDIATE_CALCULATIONS_RANGE);
+        }).then(function(cells) {
+            result.intermediate_values_array = cells.getAllValues();
+            return resolve(result);
         });
     });
 };
@@ -118,9 +124,14 @@ Resolves to a CellAsPromised object that represents a single cells.
 
 #### 'CellsAsPromised.getValue(cell)'
 
-Resolves to the value in a given cell.
+Return the value in a given cell.
 
 -- `cell` -- a string representation of the cell in the form ```'<col><row>'```, for example 'B2'
+
+#### 'CellsAsPromised.getAllValues()'
+
+Return all the values loaded in an array built horizontally first and then vertically.
+For example, if loaded the range 'A1:B2' it will return the values in the order 'A1','A2','B1','B2'.
 
 #### 'CellsAsPromised.setValue(cell, value)'
 
@@ -132,9 +143,7 @@ Resolves to undefined.
 
 #### 'CellAsPromised.getValue()'
 
-Resolves to the value in the cell.
-
--- `cell` -- a string representation of the cell in the form ```'<col><row>'```, for example 'B2'
+Returns the value in the cell.
 
 #### 'CellsAsPromised.setValue(value)'
 
@@ -190,7 +199,7 @@ NOTE: The wrapper is very limited and supports only a limited set of functionali
 
 ### Contributions
 
-If you need more features or find bugs, please contribute your improvements to [our github](https://github.com/ranhalprin/node-google-spreadsheet-as-promised) for the benefit of the community.
+If you need more features or find bugs, please contribute your improvements through pull requests in [our github](https://github.com/ranhalprin/node-google-spreadsheet-as-promised). Please also update usage.js with an example for the new functionality example.
 
 ### Updates to underlying module
 
