@@ -9,7 +9,8 @@ This node.js module allows connecting to a Google Spreadsheet, changing cell val
 
 ## Usage
 
-The following usage example is complete, meaning it covers all provided functionality. It shows how to change some parameter cells in the spreadsheet and then read values from other cells.
+The following usage example covers most provided functionality. 
+It shows how to change some parameter cells in the spreadsheet and then read values from other cells.
 
 ```javascript
 var Promise = require('bluebird');
@@ -84,9 +85,7 @@ function getResultWithParameter(parameters) {
 
 This module uses [Blubird Promises](http://bluebirdjs.com/docs/getting-started.html).
 
-### `GoogleSpreadsheetAsPromised`
-
-The main class that represents an entire spreadsheet.
+----------------------------------
 
 #### `new GoogleSpreadsheetAsPromised()`
 
@@ -107,6 +106,7 @@ Resolves to a WorksheetAsPromised object that represents one of the worksheets (
 - `worksheet_id` -- the numeric ID of the worksheet you want to work with, usually 0 for the default tab.
 
 ----------------------------------
+
 ### `WorksheetAsPromised`
 
 This class represnts a worksheet (tab)
@@ -122,6 +122,8 @@ Resolves to a CellAsPromised object that represents a single cells.
 
 -- `cell` -- a string representation of the cell in the form ```'<col><row>'```, for example 'B2'
 
+----------------------------------
+
 #### 'CellsAsPromised.getValue(cell)'
 
 Return the value in a given cell.
@@ -130,8 +132,16 @@ Return the value in a given cell.
 
 #### 'CellsAsPromised.getAllValues()'
 
-Return all the values loaded in an array built horizontally first and then vertically.
+Return all the values loaded in a single array built from the data horizontally first and then vertically.
 For example, if loaded the range 'A1:B2' it will return the values in the order 'A1','A2','B1','B2'.
+
+#### 'CellsAsPromised.getWidth()'
+
+Returns the width (number of columns) of the cell group loaded.
+
+#### 'CellsAsPromised.getHeight()'
+
+Returns the height (number of rows) of the cell group loaded.
 
 #### 'CellsAsPromised.setValue(cell, value)'
 
@@ -141,16 +151,20 @@ Resolves to undefined.
 -- `cell` -- a string representation of the cell in the form ```'<col><row>'```, for example 'B2'
 -- `value` -- a string value to write into the cell
 
+----------------------------------
+
 #### 'CellAsPromised.getValue()'
 
 Returns the value in the cell.
 
-#### 'CellsAsPromised.setValue(value)'
+#### 'CellAsPromised.setValue(value)'
 
 Sets a value to the cell.
 Resolves to undefined.
 
 -- `value` -- a string value to write into the cell
+
+----------------------------------
 
 ## Authentication
  
