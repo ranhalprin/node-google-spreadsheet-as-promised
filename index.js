@@ -43,9 +43,17 @@ function CellsAsPromised(cells, range) {
     this.getAllValues = function() {
         var result = [];
         for (var i = 0; i < cells.length; i++) {
-            result.push(cells[i].value)
+            result.push(cells[i].value);
         }
         return result;
+    };
+
+    this.getWidth = function() {
+        return range['max-col'] - range['min-col'] + 1;
+    };
+
+    this.getHeight = function() {
+        return range['max-row'] - range['min-row'] + 1;
     };
 
     this.setValue = function(cellString, value) {
