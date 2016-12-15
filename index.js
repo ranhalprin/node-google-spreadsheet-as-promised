@@ -111,25 +111,48 @@ function WorksheetAsPromised(worksheet) {
 }
 
 function GoogleSpreadsheetAsPromised() {
+
+    var self = this;
+
     this.load = function(spreadsheet_key, creds) {
         return new Promise(function(resolve, reject) {
-            this.doc = new GoogleSpreadsheet(spreadsheet_key);
-            this.doc.useServiceAccountAuth(creds, function(err) {
+            var doc = new GoogleSpreadsheet(spreadsheet_key);
+            doc.useServiceAccountAuth(creds, function(err) {
                 if (err) {
                     return reject(err);
                 }
-                return resolve();
+                doc.getInfo(function(err, info) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    self.worksheets = info.worksheets;
+                    self.worksheetNames = {};
+                    for (var i = 0; i < self.worksheets.length; i++) {
+                        self.worksheetNames[self.worksheets[i].title] = i;
+                    }
+                    return resolve();
+                });
             });
         });
     };
 
     this.getWorksheet = function(index) {
         return new Promise(function(resolve, reject) {
-            this.doc.getInfo(function(err, info) {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(new WorksheetAsPromised(info.worksheets[index]));
+            if (!self.worksheets[index]) {
+                return reject("Cannot find worksheet index: " + index);
+            }
+            return resolve(new WorksheetAsPromised(self.worksheets[index]));
+        });
+    };
+
+    this.getWorksheetByName = function(name) {
+        return new Promise(function(resolve, reject) {
+            var index = self.worksheetNames[name];
+            if (!index) {
+                return reject("Cannot find worksheet name: `" + name + "`");
+            }
+            self.getWorksheet(index).then(function(worksheetAsPromised) {
+                return resolve(worksheetAsPromised);
             });
         });
     };

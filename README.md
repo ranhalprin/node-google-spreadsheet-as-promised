@@ -105,6 +105,12 @@ Resolves to a WorksheetAsPromised object that represents one of the worksheets (
 
 - `worksheet_id` -- the numeric ID of the worksheet you want to work with, usually 0 for the default tab.
 
+#### 'GoogleSpreadsheetAsPromised.getWorksheetByName(worksheet_title)'
+
+Resolves to a WorksheetAsPromised object that represents one of the worksheets (tabs) in the spreadsheet.
+
+- `worksheet_title' -- the string title of the worksheet you want to work with. If titles are not unique, use getWorksheet(id) instead.
+
 ----------------------------------
 
 ### `WorksheetAsPromised`
