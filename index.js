@@ -148,7 +148,7 @@ function GoogleSpreadsheetAsPromised() {
     this.getWorksheetByName = function(name) {
         return new Promise(function(resolve, reject) {
             var index = self.worksheetNames[name];
-            if (!index) {
+            if (index === undefined) {
                 return reject("Cannot find worksheet name: `" + name + "`");
             }
             self.getWorksheet(index).then(function(worksheetAsPromised) {
