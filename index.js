@@ -83,10 +83,18 @@ function WorksheetAsPromised(worksheet) {
         };
     };
 
-    this.getCells = function(rangeString) {
-        var range = parseRange(rangeString);
+    this.getCells = function(rangeOrOptions) {
+        const options = {
+            returnEmpty: true,
+            ...(typeof rangeOrOptions === 'object'
+                ? rangeOrOptions
+                : {
+                      range: rangeOrOptions
+                  })
+        };
+        var range = parseRange(options.range);
         params = range;
-        params['return-empty'] = 'true';
+        params['return-empty'] = options.returnEmpty;
         return new Promise(function(resolve, reject) {
             worksheet.getCells(params, function(err, cells) {
                 if (err) {
