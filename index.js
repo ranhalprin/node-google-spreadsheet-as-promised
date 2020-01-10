@@ -28,11 +28,14 @@ function CellAsPromised(cell) {
 }
 
 function CellsAsPromised(cells, range) {
-
     var cellToIndex = function(cellString) {
-        var col = parseColumn(cellString.replace(/\d/g,''));
-        var row = parseInt(cellString.replace(/\D/g,''));
-        return (col - range['min-col']) + (row - range['min-row']) * (range['max-col'] - range['min-col'] + 1);
+        var col = parseColumn(cellString.replace(/\d/g, ''));
+        var row = parseInt(cellString.replace(/\D/g, ''));
+        return (
+            col -
+            range['min-col'] +
+            (row - range['min-row']) * (range['max-col'] - range['min-col'] + 1)
+        );
     };
 
     this.getValue = function(cellString) {
@@ -70,21 +73,28 @@ function CellsAsPromised(cells, range) {
 }
 
 function WorksheetAsPromised(worksheet) {
-
     var parseRange = function(range) {
         var parts = range.split(':');
         return {
-            'min-col': parseColumn(parts[0].replace(/\d/g,'')),
-            'max-col': parseColumn(parts[1].replace(/\d/g,'')),
-            'min-row': parseInt(parts[0].replace(/\D/g,'')),
-            'max-row': parseInt(parts[1].replace(/\D/g,''))
+            'min-col': parseColumn(parts[0].replace(/\d/g, '')),
+            'max-col': parseColumn(parts[1].replace(/\d/g, '')),
+            'min-row': parseInt(parts[0].replace(/\D/g, '')),
+            'max-row': parseInt(parts[1].replace(/\D/g, ''))
         };
     };
 
-    this.getCells = function(rangeString) {
-        var range = parseRange(rangeString);
+    this.getCells = function(rangeOrOptions) {
+        const options = {
+            returnEmpty: true,
+            ...(typeof rangeOrOptions === 'object'
+                ? rangeOrOptions
+                : {
+                      range: rangeOrOptions
+                  })
+        };
+        var range = parseRange(options.range);
         params = range;
-        params['return-empty'] = 'true';
+        params['return-empty'] = options.returnEmpty;
         return new Promise(function(resolve, reject) {
             worksheet.getCells(params, function(err, cells) {
                 if (err) {
@@ -96,7 +106,7 @@ function WorksheetAsPromised(worksheet) {
     };
 
     this.getCell = function(cellString) {
-        var range = parseRange(cellString + ":" + cellString);
+        var range = parseRange(cellString + ':' + cellString);
         params = range;
         params['return-empty'] = 'true';
         return new Promise(function(resolve, reject) {
@@ -111,7 +121,6 @@ function WorksheetAsPromised(worksheet) {
 }
 
 function GoogleSpreadsheetAsPromised() {
-
     var self = this;
 
     this.load = function(spreadsheet_key, creds) {
@@ -139,7 +148,7 @@ function GoogleSpreadsheetAsPromised() {
     this.getWorksheet = function(index) {
         return new Promise(function(resolve, reject) {
             if (!self.worksheets[index]) {
-                return reject("Cannot find worksheet index: " + index);
+                return reject('Cannot find worksheet index: ' + index);
             }
             return resolve(new WorksheetAsPromised(self.worksheets[index]));
         });
@@ -149,7 +158,7 @@ function GoogleSpreadsheetAsPromised() {
         return new Promise(function(resolve, reject) {
             var index = self.worksheetNames[name];
             if (index === undefined) {
-                return reject("Cannot find worksheet name: `" + name + "`");
+                return reject('Cannot find worksheet name: `' + name + '`');
             }
             self.getWorksheet(index).then(function(worksheetAsPromised) {
                 return resolve(worksheetAsPromised);
